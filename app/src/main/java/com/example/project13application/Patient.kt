@@ -3,10 +3,10 @@ package com.example.project13application
 data class Patient(
 
     // automatic generate by Firebase
-    var id: String = "",
-    var username: String = "",
-    var firstName: String = "",
-    var lastName: String = "",
+    var id: String ?= null,
+    var username: String ?= null,
+    var firstName: String ?= null,
+    var lastName: String ?= null,
 
     // one patient can have multiple diaries
     val diary: List<Diary>? = null,
