@@ -3,11 +3,14 @@ package com.example.project13application
 import com.google.firebase.database.Exclude
 import kotlinx.datetime.LocalDate
 
+
+//import java.time.LocalDate
+
 data class Diary(
 
-    val id: String,
-    val dateString: String,
-    val content: String
+    val id: String = "",
+    val dateString: String = "",
+    val content: String = ""
 
 ){
     // get date data from Firebase an convert to localDate type

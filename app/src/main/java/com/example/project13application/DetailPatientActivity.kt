@@ -3,6 +3,7 @@ package com.example.project13application
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -58,8 +59,29 @@ class DetailPatientActivity : AppCompatActivity() {
 
         //inital db
         database = FirebaseDatabase.getInstance().getReference("patients").child(child_key)
-        val fullname = database.child("firstName").toString() + " " + database.child("lastName").toString()
-        user.setText(fullname).toString()
+//        val fullname = database.child("firstName").toString() + " " + database.child("lastName").toString()
+//        user.setText(fullname).toString()
+
+        val database_patient = database;
+        database_patient.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val patient = snapshot.getValue(Patient::class.java)
+                if(snapshot.exists()){
+                    val fullName = "${patient?.firstName} ${patient?.lastName}"
+
+                    user.text = fullName
+                    Log.d("PatientFullName", "Full Name: $fullName")
+                }else {
+                    Log.e("PatientFullName", "Patient not found")
+                }
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("PatientFullName", "Error: databaseError")
+            }
+        })
+
 
         //read all diarys
         val database_diary = database.child("diary entry")
