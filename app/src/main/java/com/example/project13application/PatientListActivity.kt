@@ -34,6 +34,7 @@ class PatientListActivity : AppCompatActivity() {
                     for(dataSnapShot in snapshot.children){
                         //read each patient with their key in database
                         val patient = dataSnapShot.getValue(Patient::class.java)
+
                         val key = dataSnapShot.key.toString()
                         if(!patients.contains(patient)){
                             patients.add(patient!!)

@@ -24,13 +24,16 @@ class DetailPatientActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail_patient)
+
         //get patient key
         child_key = intent.getStringExtra("key").toString()
         user = findViewById(R.id.p_username)
+
         //initial arraylist
         diarys = arrayListOf()
         sub_mem = arrayListOf()
         sub_car = arrayListOf()
+
         // //recyclerview initial
         //diary
         note_recyclerView = findViewById(R.id.p_notes)
@@ -38,7 +41,7 @@ class DetailPatientActivity : AppCompatActivity() {
         val note_adapter = DiaryAdapter(diarys)
         note_recyclerView.adapter = note_adapter
 
-        //familymember
+        //family member
         sub_fam_recyclerView = findViewById(R.id.p_family_members)
         sub_fam_recyclerView.layoutManager = LinearLayoutManager(this)
         val fam_adapter = subAdapter(sub_mem)
@@ -57,19 +60,18 @@ class DetailPatientActivity : AppCompatActivity() {
             startActivity(toDetails)
         }
 
-        //inital db
+        //initialize db
         database = FirebaseDatabase.getInstance().getReference("patients").child(child_key)
-//        val fullname = database.child("firstName").toString() + " " + database.child("lastName").toString()
-//        user.setText(fullname).toString()
-
         val database_patient = database;
         database_patient.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val patient = snapshot.getValue(Patient::class.java)
                 if(snapshot.exists()){
-                    val fullName = "${patient?.firstName} ${patient?.lastName}"
 
+                    // set full name in patient detail page
+                    val fullName = "${patient?.firstName} ${patient?.lastName}"
                     user.text = fullName
+
                     Log.d("PatientFullName", "Full Name: $fullName")
                 }else {
                     Log.e("PatientFullName", "Patient not found")
@@ -83,7 +85,7 @@ class DetailPatientActivity : AppCompatActivity() {
         })
 
 
-        //read all diarys
+        //read all diaries
         val database_diary = database.child("diary entry")
         database_diary.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -111,6 +113,7 @@ class DetailPatientActivity : AppCompatActivity() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if(snapshot.exists()){
                     for(dataSnapShot in snapshot.children){
+
                         //read each patient with their key in database
                         val subscriber = dataSnapShot.getValue(Subscriber::class.java)
                         if(subscriber!!.canEdit){

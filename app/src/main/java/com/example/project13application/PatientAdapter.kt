@@ -26,8 +26,11 @@ class PatientAdapter(val patients:ArrayList<Patient>, val keys:ArrayList<String>
     }
     //link to the patient_list.xml as elements
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.patientFN.text = patients[position].firstName
+        // set patient info
+        holder.patientFN.text = "${patients[position].firstName} ${patients[position].lastName}"
         holder.key.text = keys[position]
+
+        // view detail button
         val context = holder.btn.context
         holder.btn.setOnClickListener {
             val toDetails = Intent(context, DetailPatientActivity::class.java)
