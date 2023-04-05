@@ -3,4 +3,8 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+    <string name="diary_date">Diary Date: %1$s</string>
+    <string name="id">ID</string>
+    <string name="fullname">Fullname</string>
+    <string name="view_detail">View Detail</string>
 </resources>
