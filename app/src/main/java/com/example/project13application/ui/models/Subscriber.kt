@@ -1,4 +1,4 @@
-package com.example.project13application
+package com.example.project13application.ui.models
 
 data class Subscriber(
 

@@ -1,4 +1,6 @@
-package com.example.project13application
+package com.example.project13application.ui.models
+
+import com.example.project13application.ui.models.Subscriber
 
 data class Patient(
 

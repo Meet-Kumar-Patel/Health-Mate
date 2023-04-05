@@ -1,4 +1,4 @@
-package com.example.project13application
+package com.example.project13application.ui.models
 
 import com.google.firebase.database.Exclude
 import kotlinx.datetime.LocalDate
