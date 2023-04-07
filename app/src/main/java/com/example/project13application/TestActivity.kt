@@ -105,7 +105,7 @@ class TestActivity : AppCompatActivity() {
 
     }
     // ** if wanna skip login just comment onStart() code block
-    // check if a user is logged in. If not, navigate to the LoginActivity
+    // check if a user is logged in. If not, navigate to the com.example.project13application.LoginActivity
     override fun onStart() {
         super.onStart()
         val currentUser = auth.currentUser
