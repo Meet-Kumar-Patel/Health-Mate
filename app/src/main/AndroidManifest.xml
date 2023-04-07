@@ -11,9 +11,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Project13Application"
         tools:targetApi="31">
-<!--        <activity-->
-<!--            android:name=".com.example.project13application.LoginActivity"-->
-<!--            android:exported="false" />-->
+        <activity
+            android:name=".DetailPatientActivity"
+            android:exported="false" />
+        <activity
+            android:name=".TestActivity"
+            android:exported="false"
+            />
 
         <meta-data
             android:name="com.google.android.gms.version"
@@ -31,7 +35,7 @@
             android:name=".MainActivity"
             android:exported="false" />
         <activity
-            android:name=".TestActivity"
+            android:name=".PatientListActivity"
             android:exported="true"
             android:label="@string/app_name">
             <intent-filter>
