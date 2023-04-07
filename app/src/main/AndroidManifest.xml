@@ -28,14 +28,14 @@
             android:exported="false" />
 
         <activity
-            android:name=".SignUpActivity"
+            android:name=".PatientListActivity"
             android:exported="false"/>
 
         <activity
             android:name=".MainActivity"
             android:exported="false" />
         <activity
-            android:name=".PatientListActivity"
+            android:name=".SignUpActivity"
             android:exported="true"
             android:label="@string/app_name">
             <intent-filter>

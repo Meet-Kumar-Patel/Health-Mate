@@ -7,4 +7,9 @@
     <string name="id">ID</string>
     <string name="fullname">Fullname</string>
     <string name="view_detail">View Detail</string>
+    <string-array name="subscriber_types">
+        <item>Family Member</item>
+        <item>Caregiver</item>
+    </string-array>
+
 </resources>

@@ -3,17 +3,22 @@ package com.example.project13application
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
-import android.widget.TextView
-import android.widget.Toast
+import android.view.View
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.example.project13application.databinding.ActivitySignUpBinding
+import com.example.project13application.ui.models.Subscriber
+import com.example.project13application.ui.models.SubscriberType
 import com.example.project13application.utilities.FormValidator
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
+
+
 
 class SignUpActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivitySignUpBinding
+    private lateinit var selectedSubscriberType: SubscriberType
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,8 +27,24 @@ class SignUpActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
 
+        val subscriberTypeSpinner: Spinner = findViewById(R.id.subscriberTypeSpinner)
+        val subscriberTypes = resources.getStringArray(R.array.subscriber_types)
+        val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, subscriberTypes)
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        subscriberTypeSpinner.adapter = spinnerAdapter
+
         val signupButton: Button = binding.signupButton
         val signinText: TextView = binding.navigateToSignInButton
+
+        subscriberTypeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                selectedSubscriberType = if (position == 0) SubscriberType.FAMILY_MEMBER else SubscriberType.CAREGIVER
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                selectedSubscriberType = SubscriberType.FAMILY_MEMBER
+            }
+        }
 
         signupButton.setOnClickListener {
             val emailText = binding.editTextEmailAddress.text.toString()
@@ -46,8 +67,28 @@ class SignUpActivity : AppCompatActivity() {
                 auth.createUserWithEmailAndPassword(emailText, passwordText)
                     .addOnCompleteListener(this) { task ->
                         if (task.isSuccessful) {
+
+                            val userId = auth.currentUser?.uid
+                            if (userId != null) {
+                                val canEdit = selectedSubscriberType == SubscriberType.CAREGIVER
+                                val subscriber = Subscriber(emailText, selectedSubscriberType, canEdit)
+                                val database = FirebaseDatabase.getInstance()
+                                val subscribersRef = database.getReference("subscribers")
+
+                                subscribersRef.child(userId).setValue(subscriber)
+                                    .addOnCompleteListener { task ->
+                                        if (task.isSuccessful) {
+                                            startActivity(Intent(this@SignUpActivity, PatientListActivity::class.java))
+                                            finish()
+                                        } else {
+                                            Toast.makeText(this, "Failed to create subscriber.", Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+                            } else {
+                                Toast.makeText(this, "Failed to create user.", Toast.LENGTH_SHORT).show()
+                            }
                             Log.d("com.example.project13application.SignUpActivity", "createUserWithEmail:success")
-                            startActivity(Intent(this@SignUpActivity, TestActivity::class.java))
+                            //startActivity(Intent(this@SignUpActivity, TestActivity::class.java))
                             finish()
                         } else {
                             Log.w("com.example.project13application.SignUpActivity", "createUserWithEmail:failure", task.exception)

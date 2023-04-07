@@ -72,7 +72,7 @@ class TestActivity : AppCompatActivity() {
             // Create objects
             val patient = Patient(id = "", username = "", firstName = firstName, lastName = lastName)
             val diaryEntry = Diary.create(id = "", date = today, content = content)
-            val subscriber = Subscriber(id = "", username = username, type = selectedSubscriberType, canEdit = canEdit)
+            val subscriber = Subscriber(username = username, type = selectedSubscriberType, canEdit = canEdit)
 
 
             // Get database reference

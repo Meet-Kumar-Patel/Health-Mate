@@ -45,6 +45,7 @@ class LoginActivity : AppCompatActivity() {
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
+                    startActivity(Intent(this@LoginActivity, PatientListActivity::class.java))
                     Log.d("Login", "Login was successful, proceed to fetch subscriber details")
                     fetchSubscriberDetails()
                 } else {

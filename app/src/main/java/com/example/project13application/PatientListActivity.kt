@@ -1,18 +1,47 @@
 package com.example.project13application
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.project13application.ui.models.Patient
+import com.example.project13application.ui.models.Subscriber
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
-class PatientListActivity : AppCompatActivity() {
+class PatientListActivity : AppCompatActivity(), PatientAdapter.OnViewDetailClickListener {
     private lateinit var recyclerView: RecyclerView
     private lateinit var patients: ArrayList<Patient>
     private lateinit var keys:ArrayList<String>
     private lateinit var database: DatabaseReference
 
+    private fun createSubscriber(completion: (Subscriber?) -> Unit) {
+        val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid
+
+        if (currentUserUid == null) {
+            completion(null)
+            return
+        }
+
+        val database = FirebaseDatabase.getInstance().getReference("subscribers")
+        database.child(currentUserUid).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    val subscriber = snapshot.getValue(Subscriber::class.java)
+                    completion(subscriber)
+                } else {
+                    completion(null)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                completion(null)
+            }
+        })
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_patient_list)
@@ -23,7 +52,7 @@ class PatientListActivity : AppCompatActivity() {
         //recyclerview initial
         recyclerView = findViewById(R.id.p_list)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        val adapter = PatientAdapter(patients,keys)
+        val adapter = PatientAdapter(this, patients, keys)
         recyclerView.adapter = adapter
 
         //firebase initial
@@ -51,4 +80,60 @@ class PatientListActivity : AppCompatActivity() {
             }
         })
     }
+
+    // Implement the click listener function
+    override fun onViewDetailClick(patientId: String) {
+        checkSubscriberAndNavigate(patientId)
+    }
+
+    fun checkSubscriberAndNavigate(patientId: String) {
+        val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid
+        if (currentUserUid == null) {
+            Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val database = FirebaseDatabase.getInstance().getReference("patients")
+        database.child(patientId).child("subscribers").child(currentUserUid)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        // If the subscriber exists, navigate to DetailPatientActivity
+                        val intent = Intent(this@PatientListActivity, DetailPatientActivity::class.java)
+                        intent.putExtra("patientId", patientId)
+                        startActivity(intent)
+                    } else {
+                        // Ask the user if they want to subscribe to the patient
+                        AlertDialog.Builder(this@PatientListActivity)
+                            .setTitle("Subscribe to Patient")
+                            .setMessage("You are not subscribed to this patient. Would you like to subscribe?")
+                            .setPositiveButton("Yes") { _, _ ->
+                                // Subscribe to the patient and navigate to DetailPatientActivity
+                                createSubscriber { subscriber ->
+                                    if (subscriber != null) {
+                                        database.child(patientId).child("subscribers").child(currentUserUid).setValue(subscriber)
+                                            .addOnSuccessListener {
+                                                val intent = Intent(this@PatientListActivity, DetailPatientActivity::class.java)
+                                                intent.putExtra("patientId", patientId)
+                                                startActivity(intent)
+                                            }
+                                            .addOnFailureListener { exception ->
+                                                Toast.makeText(this@PatientListActivity, "Error: ${exception.message}", Toast.LENGTH_SHORT).show()
+                                            }
+                                    } else {
+                                        Toast.makeText(this@PatientListActivity, "Error fetching subscriber details", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            }
+                            .setNegativeButton("No", null)
+                            .show()
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Toast.makeText(this@PatientListActivity, "Error: ${error.message}", Toast.LENGTH_SHORT).show()
+                }
+            })
+    }
+
 }
