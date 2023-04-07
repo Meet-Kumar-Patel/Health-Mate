@@ -11,13 +11,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Project13Application"
         tools:targetApi="31">
-        <activity
-            android:name=".LoginActivity"
-            android:exported="false" />
+<!--        <activity-->
+<!--            android:name=".com.example.project13application.LoginActivity"-->
+<!--            android:exported="false" />-->
 
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".SignUpActivity"
+            android:exported="false"/>
 
         <activity
             android:name=".MainActivity"

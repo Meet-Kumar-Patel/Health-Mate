@@ -1,12 +1,13 @@
+package com.example.project13application //<- New Change
+
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.project13application.R
-import com.example.project13application.TestActivity
 import com.example.project13application.ui.models.Subscriber
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -26,11 +27,17 @@ class LoginActivity : AppCompatActivity() {
         val emailEditText = findViewById<EditText>(R.id.emailEditText)
         val passwordEditText = findViewById<EditText>(R.id.passwordEditText)
         val loginButton = findViewById<Button>(R.id.loginButton)
+        val signupButton = findViewById<TextView>(R.id.navigateToSignUpButton) //<- New change
 
         loginButton.setOnClickListener {
             val email = emailEditText.text.toString()
             val password = passwordEditText.text.toString()
             loginUser(email, password)
+        }
+
+        //Navigate to sign up if user does not have an account
+        signupButton.setOnClickListener {
+            startActivity(Intent(this, SignUpActivity::class.java))
         }
     }
 
