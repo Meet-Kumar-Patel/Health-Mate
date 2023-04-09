@@ -5,7 +5,8 @@ data class Subscriber(
     val username: String = "",
 
     val type: SubscriberType = SubscriberType.FAMILY_MEMBER,
-    val canEdit: Boolean = false
+    val canEdit: Boolean = false,
+    val subscriptionCode:String = "" // <-- New value. Makes it easier to read subs
 )
 
 // subscriber types enumeration

@@ -78,8 +78,13 @@ class SignUpActivity : AppCompatActivity() {
                                 subscribersRef.child(userId).setValue(subscriber)
                                     .addOnCompleteListener { task ->
                                         if (task.isSuccessful) {
-                                            startActivity(Intent(this@SignUpActivity, PatientListActivity::class.java))
-                                            finish()
+                                            if (canEdit){
+                                                startActivity(Intent(this@SignUpActivity, TestActivity::class.java))
+                                                finish()
+                                            } else {
+                                                startActivity(Intent(this@SignUpActivity, SubscribeActivity::class.java))
+                                                finish()
+                                            }
                                         } else {
                                             Toast.makeText(this, "Failed to create subscriber.", Toast.LENGTH_SHORT).show()
                                         }

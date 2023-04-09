@@ -82,6 +82,11 @@ class TestActivity : AppCompatActivity() {
 
             // Add patient to Firebase, Firebase auto-generated IDs
             val patientId = patientRef.push().key ?: ""
+
+            //Generate 8 character key using code
+            val generateSubscriptionCode = patientId.takeLast(8).uppercase()
+            patient.subscriptionCode = generateSubscriptionCode
+
             patientRef.child(patientId).setValue(patient)
 
             // diary and subscriber are under the patient

@@ -9,6 +9,7 @@ data class Patient(
     var username: String = "",
     var firstName: String = "",
     var lastName: String = "",
+    var subscriptionCode: String = "",
 
     // one patient can have multiple diaries
     val diary: List<Diary>? = null,
@@ -18,4 +19,11 @@ data class Patient(
     val familyMembers: List<Subscriber>? = null,
     val caregivers: List<Subscriber>? = null
 
-)
+)  {
+    init {
+        // Set the subscription code as the last 8 characters (capitalized) of the id property
+        if (id.isNotBlank()) {
+            subscriptionCode = id.takeLast(8).uppercase()
+        }
+    }
+}
