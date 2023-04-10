@@ -6,63 +6,61 @@
     android:layout_height="match_parent"
     tools:context=".DetailPatientActivity">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/p_notes"
-        android:layout_width="409dp"
-        android:layout_height="200dp"
-        android:layout_marginBottom="20dp"
-        app:layout_constraintBottom_toTopOf="@+id/p_family_members"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:listitem="@layout/patient_notes" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/p_family_members"
-        android:layout_width="409dp"
-        android:layout_height="100dp"
-        android:layout_marginBottom="30dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:listitem="@layout/subscriber" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/p_caregivers"
-        android:layout_width="409dp"
-        android:layout_height="100dp"
-        android:layout_marginTop="168dp"
-        app:layout_constraintBottom_toTopOf="@+id/p_notes"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.786"
-        tools:listitem="@layout/subscriber" />
-
     <TextView
         android:id="@+id/p_username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="36dp"
         android:text="Patient Name"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toTopOf="@+id/p_caregivers"
+        android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.003"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/back_button"
-        app:layout_constraintVertical_bias="0.07" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/back_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
+        android:layout_marginBottom="16dp"
         android:text="Back"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.003"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/p_family_members" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/p_notes"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.4"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/p_username"
+        tools:listitem="@layout/patient_notes" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/p_family_members"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="144dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.2"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/p_notes"
+        tools:listitem="@layout/subscriber" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/p_caregivers"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/p_family_members"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/p_notes"
+        tools:listitem="@layout/subscriber" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
