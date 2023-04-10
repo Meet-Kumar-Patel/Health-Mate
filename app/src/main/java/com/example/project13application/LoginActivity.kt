@@ -45,7 +45,6 @@ class LoginActivity : AppCompatActivity() {
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    startActivity(Intent(this@LoginActivity, PatientListActivity::class.java))
                     Log.d("Login", "Login was successful, proceed to fetch subscriber details")
                     fetchSubscriberDetails()
                 } else {
@@ -53,35 +52,51 @@ class LoginActivity : AppCompatActivity() {
                     Toast.makeText(this, "Authentication failed.", Toast.LENGTH_SHORT).show()
                 }
             }
+            .addOnFailureListener { e ->
+                Log.e("Login", "Login failed with an exception: ${e.message}", e)
+                Toast.makeText(this, "Login failed with an exception.", Toast.LENGTH_LONG).show()
+            }
     }
 
     private fun fetchSubscriberDetails() {
         val currentUser = auth.currentUser
+        val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid.toString()
         if (currentUser != null) {
+            Log.d("Login", "Fetching subscriber details for user: ${currentUser.uid}")
             val subscribersRef = FirebaseDatabase.getInstance().getReference("subscribers")
-            subscribersRef.orderByChild("userId").equalTo(currentUser.uid).addListenerForSingleValueEvent(object :
+            subscribersRef.child(currentUserUid).addListenerForSingleValueEvent(object :
                 ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {
-                        for (data in snapshot.children) {
-                            val subscriber = data.getValue(Subscriber::class.java)
-                            if (subscriber != null) {
-                                // You have the subscriber object, do whatever you need with it
-                                // For example, navigate to the main activity or fetch patient details
-                                startActivity(Intent(this@LoginActivity, TestActivity::class.java))
-                                finish()
+                        val subscriber = snapshot.getValue(Subscriber::class.java)
+                            //val subscriber = data.getValue(Subscriber::class.java)
+                        if (subscriber != null) {
+
+                                // Check if the current subscriber is a family member and has no subscriptionCode
+                            if (!(subscriber.canEdit) && subscriber.subscriptionCode.isNullOrEmpty()) {
+                                Log.d("Login", "Navigating to SubscribeActivity")
+                                startActivity(Intent(this@LoginActivity, SubscribeActivity::class.java))
+                            } else {
+                                Log.d("Login", "Navigating to PatientListActivity")
+                                startActivity(Intent(this@LoginActivity, PatientListActivity::class.java))
                             }
+                            finish()
+
                         }
                     } else {
+                        Log.e("Login", "Subscriber snapshot does not exist")
                         Toast.makeText(this@LoginActivity, "Subscriber not found.", Toast.LENGTH_SHORT).show()
                     }
                 }
-
                 override fun onCancelled(error: DatabaseError) {
                     Log.e("Login", "Failed to fetch subscriber details: ${error.message}")
                 }
             })
+        } else {
+            Log.e("Login", "Current user is null")
         }
     }
+
+
 
 }
