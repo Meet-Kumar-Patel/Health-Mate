@@ -21,12 +21,15 @@ class DetailPatientActivity : AppCompatActivity() {
     private lateinit var database: DatabaseReference
     private lateinit var child_key: String
     private lateinit var user: TextView
+    private lateinit var fullName : String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail_patient)
 
         //get patient key
         child_key = intent.getStringExtra("key").toString()
+        val currentUser = intent.getStringExtra("user").toString()
+        val currentUserType = intent.getStringExtra("userType").toString()
         user = findViewById(R.id.p_username)
 
         //initial arraylist
@@ -47,29 +50,25 @@ class DetailPatientActivity : AppCompatActivity() {
         val fam_adapter = subAdapter(sub_mem)
         sub_fam_recyclerView.adapter = fam_adapter
 
+
         //caregivers
         sub_car_recyclerView = findViewById(R.id.p_caregivers)
         sub_car_recyclerView.layoutManager = LinearLayoutManager(this)
         val car_adapter = subAdapter(sub_car)
         sub_car_recyclerView.adapter = car_adapter
 
-        //button
-        val btn = findViewById<Button>(R.id.back_button)
-        btn.setOnClickListener{
-            val toDetails = Intent(this, PatientListActivity::class.java)
-            startActivity(toDetails)
-        }
+
 
         //initialize db
         database = FirebaseDatabase.getInstance().getReference("patients").child(child_key)
         val database_patient = database;
-        database_patient.addValueEventListener(object : ValueEventListener {
+        val dpL = database_patient.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val patient = snapshot.getValue(Patient::class.java)
                 if(snapshot.exists()){
 
                     // set full name in patient detail page
-                    val fullName = "${patient?.firstName} ${patient?.lastName}"
+                    fullName = "${patient?.firstName} ${patient?.lastName}"
                     user.text = fullName
 
                     Log.d("PatientFullName", "Full Name: $fullName")
@@ -87,7 +86,7 @@ class DetailPatientActivity : AppCompatActivity() {
 
         //read all diaries
         val database_diary = database.child("diary entry")
-        database_diary.addValueEventListener(object : ValueEventListener {
+        val ddL = database_diary.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if(snapshot.exists()){
                     for(dataSnapShot in snapshot.children){
@@ -95,10 +94,9 @@ class DetailPatientActivity : AppCompatActivity() {
                         val diary = dataSnapShot.getValue(Diary::class.java)
                         if(!diarys.contains(diary)){
                             diarys.add(diary!!)
+                            note_adapter.notifyItemInserted(diarys.size - 1)
                         }
                     }
-                    //use the values to build the view
-                    note_adapter.notifyDataSetChanged()
                 }
             }
 
@@ -109,7 +107,7 @@ class DetailPatientActivity : AppCompatActivity() {
 
         //get all subs
         val database_sub = database.child("subscribers")
-        database_sub.addValueEventListener(object :ValueEventListener{
+        val dsL = database_sub.addValueEventListener(object :ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 if(snapshot.exists()){
                     for(dataSnapShot in snapshot.children){
@@ -135,5 +133,27 @@ class DetailPatientActivity : AppCompatActivity() {
                 Toast.makeText(this@DetailPatientActivity, error.toString(), Toast.LENGTH_SHORT).show()
             }
         })
+
+        // meet
+        //button
+        val addButton = findViewById<Button>(R.id.addButton)
+        if(currentUserType == "FAMILY_MEMBER"){
+            addButton.isEnabled = false
+            addButton.isClickable = false
+        }
+        else{
+            addButton.setOnClickListener{
+                database_patient.removeEventListener(dpL)
+                database_diary.removeEventListener(ddL)
+                database_sub.removeEventListener(dsL)
+
+                val toAdd = Intent(this, AddNotesActivity::class.java)
+                toAdd.putExtra("userToBeUpdated", child_key)
+                toAdd.putExtra("currentUser", currentUser)
+                toAdd.putExtra("userNameToBeUpdated",fullName)
+                startActivity(toAdd)
+            }
+        }
+        // meet end
     }
 }

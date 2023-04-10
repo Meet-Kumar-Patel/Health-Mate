@@ -16,6 +16,10 @@ class PatientListActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_patient_list)
+
+        val userId = intent.getStringExtra("userId").toString()
+        val userType = intent.getStringExtra("type").toString()
+
         //store data array
         patients = arrayListOf()
         keys = arrayListOf()
@@ -23,7 +27,7 @@ class PatientListActivity : AppCompatActivity() {
         //recyclerview initial
         recyclerView = findViewById(R.id.p_list)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        val adapter = PatientAdapter(patients,keys)
+        val adapter = PatientAdapter(patients,keys, userId, userType)
         recyclerView.adapter = adapter
 
         //firebase initial
@@ -33,14 +37,30 @@ class PatientListActivity : AppCompatActivity() {
                 if(snapshot.exists()){
                     for(dataSnapShot in snapshot.children){
                         //read each patient with their key in database
+                        // meet
                         val patient = dataSnapShot.getValue(Patient::class.java)
+                        var isSubscribed = false
 
-                        val key = dataSnapShot.key.toString()
-                        if(!patients.contains(patient)){
-                            patients.add(patient!!)
-                            keys.add(key!!)
+                        val subscribers = patient?.subscribers
+
+                        if (subscribers != null) {
+                            for(c in subscribers){
+                                if(c.value.username == userId){
+                                    isSubscribed = true
+                                    break
+                                }
+                            }
+                        }
+
+                        if(isSubscribed) {
+                            val key = dataSnapShot.key.toString()
+                            if (!patients.contains(patient)) {
+                                patients.add(patient!!)
+                                keys.add(key!!)
+                            }
                         }
                     }
+                    // end meet
                     //use the values to build the view
                     adapter.notifyDataSetChanged()
                 }

@@ -30,5 +30,13 @@
             android:text="Diary body"
             android:textColor="@color/black"
             android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/notediaryBy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Diary By"
+            android:textColor="@color/black"
+            android:textSize="18sp" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>

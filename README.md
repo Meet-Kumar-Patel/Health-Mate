@@ -6,4 +6,4 @@
 - Kevin Parke (B00905552)
 - Wenbo Peng
 - Rui Zeng
-- Meet Kumar Patel
+- Meet Kumar Patel (B00857644)

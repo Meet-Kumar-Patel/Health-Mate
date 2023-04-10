@@ -9,7 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 //data adapter for patients
-class PatientAdapter(val patients:ArrayList<Patient>, val keys:ArrayList<String>):RecyclerView.Adapter<PatientAdapter.MyViewHolder>() {
+class PatientAdapter(val patients:ArrayList<Patient>, val keys:ArrayList<String>, val user: String, val userType: String):RecyclerView.Adapter<PatientAdapter.MyViewHolder>() {
     class MyViewHolder(itemView: View):RecyclerView.ViewHolder(itemView){
         val patientFN:TextView = itemView.findViewById(R.id.fn_patient)
         val key:TextView = itemView.findViewById(R.id.key_patient)
@@ -34,7 +34,9 @@ class PatientAdapter(val patients:ArrayList<Patient>, val keys:ArrayList<String>
         val context = holder.btn.context
         holder.btn.setOnClickListener {
             val toDetails = Intent(context, DetailPatientActivity::class.java)
-            toDetails.putExtra("key",keys[position])
+            toDetails.putExtra("key", keys[position])
+            toDetails.putExtra("user", user)
+            toDetails.putExtra("userType", userType)
             context.startActivity(toDetails)
 
         }

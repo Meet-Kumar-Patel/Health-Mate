@@ -30,6 +30,17 @@
             android:name=".PatientListActivity"
             android:exported="true"
             android:label="@string/app_name">
+
+        </activity>
+
+        <activity
+            android:name=".AddNotesActivity"
+            android:exported="true">
+        </activity>
+
+        <activity
+            android:name=".SubscriberActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

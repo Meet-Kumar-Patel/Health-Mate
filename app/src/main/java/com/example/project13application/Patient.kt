@@ -13,7 +13,10 @@ data class Patient(
 
     // one patient can have multiple subscribers
     // and we have two types of subscriber
-    val familyMembers: List<Subscriber>? = null,
-    val caregivers: List<Subscriber>? = null
+//    val familyMembers: List<Subscriber>? = null,
+//    val caregivers: List<Subscriber>? = null
+    // meet
+    val subscribers: HashMap<String, Subscriber>? = null
+// meet end
 
 )
