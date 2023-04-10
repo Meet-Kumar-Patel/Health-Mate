@@ -8,6 +8,7 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.project13application.ui.models.Patient
 import com.example.project13application.ui.models.Subscriber
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -71,11 +72,38 @@ class LoginActivity : AppCompatActivity() {
                         val subscriber = snapshot.getValue(Subscriber::class.java)
                             //val subscriber = data.getValue(Subscriber::class.java)
                         if (subscriber != null) {
-
                                 // Check if the current subscriber is a family member and has no subscriptionCode
                             if (!(subscriber.canEdit) && subscriber.subscriptionCode.isNullOrEmpty()) {
                                 Log.d("Login", "Navigating to SubscribeActivity")
                                 startActivity(Intent(this@LoginActivity, SubscribeActivity::class.java))
+                            } else if (subscriber.subscriptionCode.length == 8){
+                                // Fetch the patient based on the subscriptionCode
+                                val patientsRef = FirebaseDatabase.getInstance().getReference("patients")
+
+                                patientsRef.orderByChild("subscriptionCode").equalTo(subscriber.subscriptionCode).addListenerForSingleValueEvent(object : ValueEventListener {
+                                    override fun onDataChange(patientSnapshot: DataSnapshot) {
+                                        if (patientSnapshot.exists()) {
+                                            for (patientData in patientSnapshot.children) {
+                                                val patient = patientData.getValue(Patient::class.java)
+                                                if (patient != null) {
+                                                    Log.d("Login", "Navigating to DetailPatientActivity")
+                                                    val intent = Intent(this@LoginActivity, DetailPatientActivity::class.java)
+                                                    intent.putExtra("patientId", patientData.key) // Pass the patient ID to DetailPatientActivity
+                                                    startActivity(intent)
+                                                    finish()
+                                                    break
+                                                }
+                                            }
+                                        } else {
+                                            Log.e("Login", "Patient not found for subscriptionCode: ${subscriber.subscriptionCode}")
+                                        }
+                                    }
+
+                                    override fun onCancelled(patientError: DatabaseError) {
+                                        Log.e("Login", "Failed to fetch patient details: ${patientError.message}")
+                                    }
+                                })
+
                             } else {
                                 Log.d("Login", "Navigating to PatientListActivity")
                                 startActivity(Intent(this@LoginActivity, PatientListActivity::class.java))
