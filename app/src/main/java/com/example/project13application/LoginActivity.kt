@@ -104,6 +104,9 @@ class LoginActivity : AppCompatActivity() {
                                     }
                                 })
 
+                            } else if (subscriber.canEdit && subscriber.subscriptionCode.isNullOrEmpty()){
+                                startActivity(Intent(this@LoginActivity, TestActivity::class.java))
+
                             } else {
                                 Log.d("Login", "Navigating to PatientListActivity")
                                 startActivity(Intent(this@LoginActivity, PatientListActivity::class.java))

@@ -48,22 +48,6 @@
             android:minHeight="48dp"
             android:padding="8dp"/>
 
-        <!-- Input fields for Subscriber -->
-        <EditText
-            android:id="@+id/subscriberUsername"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Subscriber Username"
-            android:minHeight="48dp"
-            android:padding="8dp"/>
-
-        <Spinner
-            android:id="@+id/subscriberTypeSpinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:contentDescription="Select Subscriber Type"
-            android:minHeight="48dp"
-            android:padding="8dp"/>
 
         <Button
             android:id="@+id/addDataButton"

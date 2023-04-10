@@ -13,7 +13,10 @@ import com.example.project13application.ui.models.Patient
 import com.example.project13application.ui.models.Subscriber
 import com.example.project13application.ui.models.SubscriberType
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import kotlinx.datetime.*
 import kotlinx.datetime.TimeZone
 import java.util.*
@@ -23,7 +26,31 @@ class TestActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
 
     private lateinit var binding: ActivityTestBinding
-    private var selectedSubscriberType: SubscriberType = SubscriberType.FAMILY_MEMBER
+
+    private fun createSubscriber(completion: (Subscriber?) -> Unit) {
+        val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid
+
+        if (currentUserUid == null) {
+            completion(null)
+            return
+        }
+
+        val database = FirebaseDatabase.getInstance().getReference("subscribers")
+        database.child(currentUserUid).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    val subscriber = snapshot.getValue(Subscriber::class.java)
+                    completion(subscriber)
+                } else {
+                    completion(null)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                completion(null)
+            }
+        })
+    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,25 +63,7 @@ class TestActivity : AppCompatActivity() {
         val patientFirstName = findViewById<EditText>(R.id.patientFirstName)
         val patientLastName = findViewById<EditText>(R.id.patientLastName)
         val diaryContent = findViewById<EditText>(R.id.diaryContent)
-        val subscriberUsername = findViewById<EditText>(R.id.subscriberUsername)
-        val subscriberTypeSpinner = findViewById<Spinner>(R.id.subscriberTypeSpinner)
         val addDataButton = findViewById<Button>(R.id.addDataButton)
-
-        // Set up the spinner
-        val subscriberTypes = arrayOf("Family Member", "Caregiver")
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, subscriberTypes)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        subscriberTypeSpinner.adapter = adapter
-
-        subscriberTypeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                selectedSubscriberType = if (position == 0) SubscriberType.FAMILY_MEMBER else SubscriberType.CAREGIVER
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                selectedSubscriberType = SubscriberType.FAMILY_MEMBER
-            }
-        }
 
         // Display today's date in layout
         val today = Clock.System.todayAt(TimeZone.currentSystemDefault())
@@ -64,16 +73,11 @@ class TestActivity : AppCompatActivity() {
 
             val firstName = patientFirstName.text.toString()
             val lastName = patientLastName.text.toString()
-
             val content = diaryContent.text.toString()
-            val username = subscriberUsername.text.toString()
-            val canEdit = selectedSubscriberType == SubscriberType.CAREGIVER
 
             // Create objects
             val patient = Patient(id = "", username = "", firstName = firstName, lastName = lastName)
             val diaryEntry = Diary.create(id = "", date = today, content = content)
-            val subscriber = Subscriber(username = username, type = selectedSubscriberType, canEdit = canEdit)
-
 
             // Get database reference
             val database = FirebaseDatabase.getInstance()
@@ -83,22 +87,56 @@ class TestActivity : AppCompatActivity() {
             // Add patient to Firebase, Firebase auto-generated IDs
             val patientId = patientRef.push().key ?: ""
 
-            //Generate 8 character key using code
+            val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid.toString()
+
+            // Generate 8 character key using code
             val generateSubscriptionCode = patientId.takeLast(8).uppercase()
             patient.subscriptionCode = generateSubscriptionCode
 
-            patientRef.child(patientId).setValue(patient)
+            patientRef.child(patientId).setValue(patient).addOnCompleteListener {
+                if (it.isSuccessful) {
+                    // Update the caregiver's Subscriber object in the database
+                    val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
+                    if (currentUserId != null) {
+                        val subscriberRef = FirebaseDatabase.getInstance().getReference("subscribers")
+                        subscriberRef.child(currentUserId).child("subscriptionCode").setValue(patient.subscriptionCode)
 
-            // diary and subscriber are under the patient
+                        // Add the caregiver's ID to the patient's subscribers subset
+                        val patientSubscribersRef = FirebaseDatabase.getInstance().getReference("patients/$patientId/subscribers")
+
+
+                        createSubscriber { subscriber ->
+                            if (subscriber != null) {
+                                patientRef.child(patientId).child("subscribers").child(currentUserUid).setValue(subscriber)
+                                    .addOnSuccessListener {
+                                        val intent = Intent(this@TestActivity, DetailPatientActivity::class.java)
+                                        intent.putExtra("patientId", patientId)
+                                        startActivity(intent)
+                                    }
+                                    .addOnFailureListener { exception ->
+                                        Toast.makeText(this@TestActivity, "Error: ${exception.message}", Toast.LENGTH_SHORT).show()
+                                    }
+                            } else {
+                                Toast.makeText(this@TestActivity, "Error fetching subscriber details", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+
+
+                        patientSubscribersRef.child(currentUserId).setValue(true)
+                    }
+
+                    Toast.makeText(this, "Patient saved successfully.", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, "Failed to save the patient.", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            // Diary and subscriber are under the patient
             val diaryRef = patientRef.child(patientId).child("diary entry")
-            val subscriberRef = patientRef.child(patientId).child("subscribers")
 
             // Add diary and subscriber to Firebase, Firebase auto-generated IDs
             val diaryId = patientRef.child(patientId).child("diary entry").push().key ?: ""
             diaryRef.child(diaryId).setValue(diaryEntry)
-
-            val subscriberId = patientRef.child(patientId).child("subscribers").push().key ?: ""
-            subscriberRef.child(subscriberId).setValue(subscriber)
                 .addOnSuccessListener {
                     showToast("Patient added successfully")
                 }
@@ -109,8 +147,9 @@ class TestActivity : AppCompatActivity() {
         }
 
     }
-    // ** if wanna skip login just comment onStart() code block
-    // check if a user is logged in. If not, navigate to the com.example.project13application.LoginActivity
+
+    // ** if you want to skip login just comment onStart() code block
+    // Check if a user is logged in. If not, navigate to the com.example.project13application.LoginActivity
     override fun onStart() {
         super.onStart()
         val currentUser = auth.currentUser
@@ -125,5 +164,4 @@ class TestActivity : AppCompatActivity() {
     }
 
 }
-
 

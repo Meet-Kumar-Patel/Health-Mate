@@ -19,6 +19,8 @@ data class Patient(
     val familyMembers: List<Subscriber>? = null,
     val caregivers: List<Subscriber>? = null
 
+
+
 )  {
     init {
         // Set the subscription code as the last 8 characters (capitalized) of the id property
