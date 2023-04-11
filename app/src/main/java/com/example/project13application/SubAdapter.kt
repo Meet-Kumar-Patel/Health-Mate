@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.project13application.ui.models.Subscriber
 
 class subAdapter(val subs:ArrayList<Subscriber>): RecyclerView.Adapter<subAdapter.MyViewHolder>() {
     class MyViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){

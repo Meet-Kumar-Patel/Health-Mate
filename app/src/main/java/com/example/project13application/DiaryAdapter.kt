@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.project13application.ui.models.Diary
 
 class DiaryAdapter(val diarys:ArrayList<Diary>): RecyclerView.Adapter<DiaryAdapter.MyViewHolder>() {
     class MyViewHolder(itemView: View):RecyclerView.ViewHolder(itemView){

@@ -1,15 +1,18 @@
 package com.example.project13application
 
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.project13application.ui.models.Patient
 
 //data adapter for patients
-class PatientAdapter(val patients:ArrayList<Patient>, val keys:ArrayList<String>):RecyclerView.Adapter<PatientAdapter.MyViewHolder>() {
+class PatientAdapter(val onViewDetailClickListener: OnViewDetailClickListener, val patients:ArrayList<Patient>, val keys:ArrayList<String>):RecyclerView.Adapter<PatientAdapter.MyViewHolder>() {
+
     class MyViewHolder(itemView: View):RecyclerView.ViewHolder(itemView){
         val patientFN:TextView = itemView.findViewById(R.id.fn_patient)
         val key:TextView = itemView.findViewById(R.id.key_patient)
@@ -30,13 +33,17 @@ class PatientAdapter(val patients:ArrayList<Patient>, val keys:ArrayList<String>
         holder.patientFN.text = "${patients[position].firstName} ${patients[position].lastName}"
         holder.key.text = keys[position]
 
+        Log.d("PatientAdapter", "Patient Key: ${keys[position]}")
+
         // view detail button
         val context = holder.btn.context
         holder.btn.setOnClickListener {
-            val toDetails = Intent(context, DetailPatientActivity::class.java)
-            toDetails.putExtra("key",keys[position])
-            context.startActivity(toDetails)
-
+            onViewDetailClickListener.onViewDetailClick(keys[position])
         }
     }
+
+    interface OnViewDetailClickListener {
+        fun onViewDetailClick(patientId: String)
+    }
+
 }

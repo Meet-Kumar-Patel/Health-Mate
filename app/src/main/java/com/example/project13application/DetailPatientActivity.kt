@@ -9,6 +9,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.project13application.ui.models.Diary
+import com.example.project13application.ui.models.Patient
+import com.example.project13application.ui.models.Subscriber
 import com.google.firebase.database.*
 
 class DetailPatientActivity : AppCompatActivity() {
@@ -19,14 +22,15 @@ class DetailPatientActivity : AppCompatActivity() {
     private lateinit var sub_mem:ArrayList<Subscriber>
     private lateinit var sub_car:ArrayList<Subscriber>
     private lateinit var database: DatabaseReference
-    private lateinit var child_key: String
+    //private lateinit var child_key: String
     private lateinit var user: TextView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail_patient)
 
         //get patient key
-        child_key = intent.getStringExtra("key").toString()
+        val child_key = intent.getStringExtra("patientId").toString()
+        Log.d("DetailPatientActivity", "Received child_key: $child_key")
         user = findViewById(R.id.p_username)
 
         //initial arraylist
@@ -65,6 +69,7 @@ class DetailPatientActivity : AppCompatActivity() {
         val database_patient = database;
         database_patient.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
+                Log.d("DetailPatientActivity", "DataSnapshot: $snapshot")
                 val patient = snapshot.getValue(Patient::class.java)
                 if(snapshot.exists()){
 
