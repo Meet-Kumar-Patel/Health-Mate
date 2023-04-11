@@ -14,7 +14,8 @@
         android:padding="10dp"
         app:layout_constraintBaseline_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:listitem="@layout/patient_list"/>
+        tools:listitem="@layout/patient_list" />
 </androidx.constraintlayout.widget.ConstraintLayout>
