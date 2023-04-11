@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.project13application.ui.models.Diary
 import com.example.project13application.ui.models.Patient
 import com.example.project13application.ui.models.Subscriber
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
 class DetailPatientActivity : AppCompatActivity() {
@@ -24,9 +26,13 @@ class DetailPatientActivity : AppCompatActivity() {
     private lateinit var database: DatabaseReference
     //private lateinit var child_key: String
     private lateinit var user: TextView
+
+    private lateinit var auth: FirebaseAuth
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail_patient)
+
+        auth = FirebaseAuth.getInstance()
 
         //get patient key
         val child_key = intent.getStringExtra("patientId").toString()
@@ -56,13 +62,6 @@ class DetailPatientActivity : AppCompatActivity() {
         sub_car_recyclerView.layoutManager = LinearLayoutManager(this)
         val car_adapter = subAdapter(sub_car)
         sub_car_recyclerView.adapter = car_adapter
-
-        //button
-        val btn = findViewById<Button>(R.id.back_button)
-        btn.setOnClickListener{
-            val toDetails = Intent(this, PatientListActivity::class.java)
-            startActivity(toDetails)
-        }
 
         //initialize db
         database = FirebaseDatabase.getInstance().getReference("patients").child(child_key)
@@ -140,5 +139,49 @@ class DetailPatientActivity : AppCompatActivity() {
                 Toast.makeText(this@DetailPatientActivity, error.toString(), Toast.LENGTH_SHORT).show()
             }
         })
+
+        val currentUser = auth.currentUser
+        val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid.toString()
+        val addButton = findViewById<Button>(R.id.addButton)
+        if (currentUser != null) {
+            Log.d("Login", "Fetching subscriber details for user: ${currentUser.uid}")
+            val subscribersRef = FirebaseDatabase.getInstance().getReference("subscribers")
+            subscribersRef.child(currentUserUid).addListenerForSingleValueEvent(object :
+                ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        val subscriber = snapshot.getValue(Subscriber::class.java)
+                        //val subscriber = data.getValue(Subscriber::class.java)
+                        if (subscriber != null) {
+
+                            if (!subscriber.canEdit) {
+                                addButton.isEnabled = false
+                                addButton.setVisibility(View.GONE);
+                            } else {
+                                addButton.setOnClickListener {
+
+                                    val fullName = user.text.toString()
+
+
+                                    val toAdd = Intent(this@DetailPatientActivity, AddNotesActivity::class.java)
+                                    toAdd.putExtra("userToBeUpdated", child_key)
+                                    toAdd.putExtra("currentUser", currentUser)
+                                    toAdd.putExtra("userNameToBeUpdated", fullName)
+                                    startActivity(toAdd)
+                                }
+                            }
+                        }
+
+                    }
+                }
+                override fun onCancelled(error: DatabaseError) {
+                    Log.e("Login", "Failed to fetch subscriber details: ${error.message}")
+                }
+            })
+        } else {
+            Log.e("Login", "Current user is null")
+        }
+
     }
+
 }

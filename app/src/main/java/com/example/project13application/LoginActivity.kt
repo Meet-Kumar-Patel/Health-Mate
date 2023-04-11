@@ -76,7 +76,7 @@ class LoginActivity : AppCompatActivity() {
                             if (!(subscriber.canEdit) && subscriber.subscriptionCode.isNullOrEmpty()) {
                                 Log.d("Login", "Navigating to SubscribeActivity")
                                 startActivity(Intent(this@LoginActivity, SubscribeActivity::class.java))
-                            } else if (subscriber.subscriptionCode.length == 8){
+                            } else if (!(subscriber.canEdit) && subscriber.subscriptionCode.length == 8){
                                 // Fetch the patient based on the subscriptionCode
                                 val patientsRef = FirebaseDatabase.getInstance().getReference("patients")
 
@@ -103,6 +103,7 @@ class LoginActivity : AppCompatActivity() {
                                         Log.e("Login", "Failed to fetch patient details: ${patientError.message}")
                                     }
                                 })
+
 
                             } else if (subscriber.canEdit && subscriber.subscriptionCode.isNullOrEmpty()){
                                 startActivity(Intent(this@LoginActivity, TestActivity::class.java))

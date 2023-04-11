@@ -35,7 +35,8 @@
         <activity
             android:name=".PatientListActivity"
             android:exported="false"/>
-
+        <activity android:name="AddNotesActivity"
+            android:exported="false"/>
         <activity
             android:name=".MainActivity"
             android:exported="false" />
