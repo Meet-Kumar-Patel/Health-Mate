@@ -3,6 +3,8 @@ package com.example.project13application
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,6 +22,8 @@ class PatientListActivity : AppCompatActivity(), PatientAdapter.OnViewDetailClic
     private lateinit var database: DatabaseReference
     private lateinit var bottomNavigationView: BottomNavigationView
     private var selectedPatientId: String? = null
+
+    private lateinit var auth: FirebaseAuth
 
     private fun createSubscriber(completion: (Subscriber?) -> Unit) {
         val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid
@@ -51,6 +55,8 @@ class PatientListActivity : AppCompatActivity(), PatientAdapter.OnViewDetailClic
         //store data array
         patients = arrayListOf()
         keys = arrayListOf()
+
+        auth = FirebaseAuth.getInstance()
 
         //recyclerview initial
         recyclerView = findViewById(R.id.p_list)
@@ -162,6 +168,24 @@ class PatientListActivity : AppCompatActivity(), PatientAdapter.OnViewDetailClic
                     Toast.makeText(this@PatientListActivity, "Error: ${error.message}", Toast.LENGTH_SHORT).show()
                 }
             })
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_logout -> {
+                auth.signOut()
+                val intent = Intent(this, LoginActivity::class.java)
+                startActivity(intent)
+                finish()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
 }

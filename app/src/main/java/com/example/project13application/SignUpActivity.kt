@@ -13,8 +13,6 @@ import com.example.project13application.utilities.FormValidator
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
-
-
 class SignUpActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivitySignUpBinding
@@ -79,7 +77,7 @@ class SignUpActivity : AppCompatActivity() {
                                     .addOnCompleteListener { task ->
                                         if (task.isSuccessful) {
                                             if (canEdit){
-                                                startActivity(Intent(this@SignUpActivity, TestActivity::class.java))
+                                                startActivity(Intent(this@SignUpActivity, AddPatientActivity::class.java))
                                                 finish()
                                             } else {
                                                 startActivity(Intent(this@SignUpActivity, SubscribeActivity::class.java))
