@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.project13application.ui.models.Patient
 import com.example.project13application.ui.models.Subscriber
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
@@ -17,6 +18,8 @@ class PatientListActivity : AppCompatActivity(), PatientAdapter.OnViewDetailClic
     private lateinit var patients: ArrayList<Patient>
     private lateinit var keys:ArrayList<String>
     private lateinit var database: DatabaseReference
+    private lateinit var bottomNavigationView: BottomNavigationView
+    private var selectedPatientId: String? = null
 
     private fun createSubscriber(completion: (Subscriber?) -> Unit) {
         val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid
@@ -79,10 +82,35 @@ class PatientListActivity : AppCompatActivity(), PatientAdapter.OnViewDetailClic
                 Toast.makeText(this@PatientListActivity, error.toString(), Toast.LENGTH_SHORT).show()
             }
         })
+
+        // navbar
+        bottomNavigationView = findViewById(R.id.bottom_navigation)
+
+        bottomNavigationView.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.action_home -> {
+                    val intent = Intent(this, PatientListActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+                R.id.action_details -> {
+                    if (selectedPatientId == null) {
+                        Toast.makeText(this@PatientListActivity, "Please select a patient first", Toast.LENGTH_SHORT).show()
+                        return@setOnItemSelectedListener true
+                    }
+                    val intent = Intent(this, DetailPatientActivity::class.java)
+                    intent.putExtra("patientId", selectedPatientId)
+                    startActivity(intent)
+                    true
+                }
+                else -> false
+            }
+        }
     }
 
     // Implement the click listener function
     override fun onViewDetailClick(patientId: String) {
+        selectedPatientId = patientId
         checkSubscriberAndNavigate(patientId)
     }
 
