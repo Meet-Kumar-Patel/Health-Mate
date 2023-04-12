@@ -8,8 +8,13 @@ import android.view.MenuItem
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.example.project13application.databinding.ActivitySubscribeActivityBinding
+import com.example.project13application.ui.models.Patient
 import com.example.project13application.ui.models.Subscriber
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
@@ -24,12 +29,79 @@ class SubscribeActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         auth = FirebaseAuth.getInstance()
+
+        binding.subscribeButton.setOnClickListener {
+            val enteredCode = binding.subscriptionCodeEditText.text.toString()
+            searchSubscriptionCode(enteredCode)
+        }
     }
 
-    /**
-     * UI Fork - Page displayed only if user is a family member and they are currently not
-     * subscribed to any updates
-     */
+    private fun searchSubscriptionCode(subscriptionCode: String) {
+        val database = FirebaseDatabase.getInstance()
+        val patientsRef = database.getReference("patients")
+        val query = patientsRef.orderByChild("subscriptionCode").equalTo(subscriptionCode)
+
+        query.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    val patientEntry = snapshot.children.first()
+                    val patient = patientEntry.getValue(Patient::class.java)
+                    val patientId = patientEntry.key
+
+                    if (patient != null && patientId != null) {
+                        subscriberPatient(patientId)
+                    }
+
+                } else {
+                    showSubscriptionError()
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                showSubscriptionError()
+            }
+        })
+    }
+
+    private fun subscriberPatient(patientId: String) {
+        val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
+
+        if (currentUserId != null) {
+            val database = FirebaseDatabase.getInstance()
+            val subscriberRef = database.getReference("subscribers")
+            val patientSubscribersRef = database.getReference("patients/$patientId/subscribers")
+
+            val subscriptionCode = patientId.takeLast(8).uppercase()
+            subscriberRef.child(currentUserId).child("subscriptionCode").setValue(subscriptionCode)
+
+            subscriberRef.child(currentUserId).addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val subscriber = snapshot.getValue(Subscriber::class.java)
+
+                    if (subscriber != null) {
+                        patientSubscribersRef.child(currentUserId).setValue(subscriber)
+                            .addOnSuccessListener {
+                                val intent = Intent(this@SubscribeActivity, DetailPatientActivity::class.java)
+                                intent.putExtra("patientId", patientId)
+                                startActivity(intent)
+                            }
+                            .addOnFailureListener { exception ->
+                                showToast("Error")
+                            }
+                    } else {
+                        showToast("Error")
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    showToast("Error")
+                }
+            })
+        } else {
+            showToast("Error")
+        }
+    }
+
     override fun onStart() {
         super.onStart()
         val currentUser = auth.currentUser
@@ -38,12 +110,23 @@ class SubscribeActivity : AppCompatActivity() {
             subscriberRef.get().addOnSuccessListener { snapshot ->
                 val subscriber = snapshot.getValue(Subscriber::class.java)
                 if (subscriber?.subscriptionCode?.isEmpty() == false) {
-                    startActivity(Intent(this@SubscribeActivity, DetailPatientActivity::class.java))
+                    val intent = Intent(this@SubscribeActivity, DetailPatientActivity::class.java)
+                    intent.putExtra("patientId", subscriber.subscriptionCode)
+                    startActivity(intent)
                 }
             }.addOnFailureListener { error ->
-                Log.e("firebase", "Error getting subscriber data", error)
+                Log.e("firebase", "Error getting data", error)
             }
         }
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun showSubscriptionError() {
+        Toast.makeText(this, "Invalid subscription code! Please try again", Toast.LENGTH_SHORT).show()
+        binding.subscriptionCodeEditText.error = "Invalid subscription code!"
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -65,5 +148,10 @@ class SubscribeActivity : AppCompatActivity() {
     }
 
 }
+
+
+
+
+
 
 

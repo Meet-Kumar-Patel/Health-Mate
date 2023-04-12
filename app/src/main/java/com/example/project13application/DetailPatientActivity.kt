@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.project13application.ui.models.Diary
 import com.example.project13application.ui.models.Patient
 import com.example.project13application.ui.models.Subscriber
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
@@ -29,12 +30,38 @@ class DetailPatientActivity : AppCompatActivity() {
     //private lateinit var child_key: String
     private lateinit var user: TextView
 
+    private lateinit var bottomNavigationView: BottomNavigationView
+
+
     private lateinit var auth: FirebaseAuth
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail_patient)
 
         auth = FirebaseAuth.getInstance()
+
+        // navbar
+        bottomNavigationView = findViewById(R.id.bottom_navigation)
+
+        bottomNavigationView.menu.findItem(R.id.action_details).isChecked = true
+        bottomNavigationView.selectedItemId = R.id.action_details
+
+        bottomNavigationView.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.action_home -> {
+                    val intent = Intent(this, PatientListActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+                R.id.action_details -> {
+                    true // do nothing
+                }
+                else -> false
+            }
+        }
+
+        // retrieve the patient's ID from the intent extras (not implemented yet)
+        val patientId = intent.getStringExtra("patientId")
 
         //get patient key
         val child_key = intent.getStringExtra("patientId").toString()
