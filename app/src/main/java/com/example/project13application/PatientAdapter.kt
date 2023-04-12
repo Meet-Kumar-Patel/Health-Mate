@@ -10,7 +10,16 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.project13application.ui.models.Patient
 
-//data adapter for patients
+/**
+ *
+ * This Class is used to get the Patient
+ * details on Firebase, and adapter will
+ * pass these patient details data to local.
+ *
+ * Author: Rui Zeng
+ * BannerID: B00800727
+ * version: 1.0
+ */
 class PatientAdapter(val onViewDetailClickListener: OnViewDetailClickListener, val patients:ArrayList<Patient>, val keys:ArrayList<String>):RecyclerView.Adapter<PatientAdapter.MyViewHolder>() {
 
     class MyViewHolder(itemView: View):RecyclerView.ViewHolder(itemView){

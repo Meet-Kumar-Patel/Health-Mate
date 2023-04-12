@@ -23,6 +23,16 @@ import com.google.firebase.database.ValueEventListener
 import java.time.LocalDate
 import java.util.*
 
+/**
+ *
+ * This class is used to add new daily notes for patients.
+ * Family members cannot access this page, only Caregiver can.
+ * The page will display information about patient and the current subscriber.
+ *
+ * Author: Meet Kumer Patel
+ * BannerID: B00857644
+ * version: 2.0
+ */
 class AddNotesActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth

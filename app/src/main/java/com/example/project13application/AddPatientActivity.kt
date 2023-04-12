@@ -19,6 +19,17 @@ import kotlinx.datetime.*
 import kotlinx.datetime.TimeZone
 import java.util.*
 
+/**
+ *
+ * This class is used to add a new Patient
+ * and a new Daily Diary, only Caregiver can
+ * access this page. caregiver will automatically
+ * subscribe this patient.
+ *
+ * Author: Wenbo Peng
+ * BannerID: B00916504
+ * version: 3.0
+ */
 class AddPatientActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth

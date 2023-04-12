@@ -8,6 +8,17 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.project13application.ui.models.Diary
 
+/**
+ *
+ * This Class is used to get the Diary
+ * entry of each patient on Firebase,
+ * and adapter will pass these diaries to local.
+ *
+ * Author: Rui Zeng
+ * BannerID: B00800727
+ * version: 1.0
+ */
+
 class DiaryAdapter(val diarys:ArrayList<Diary>): RecyclerView.Adapter<DiaryAdapter.MyViewHolder>() {
     class MyViewHolder(itemView: View):RecyclerView.ViewHolder(itemView){
         val date: TextView = itemView.findViewById(R.id.note_date)

@@ -18,6 +18,19 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
+
+/**
+ *
+ * This Class is used to subscribe patients.
+ * All Family members that do not subscribe
+ * to any patient will be redirected to this page.
+ * The user needs to enter an 8-digit confirmation
+ * code to subscribe corresponding patients.
+ *
+ * Author: Kevin Parke, Wenbo Peng
+ * BannerID: B00905552, B00916504
+ * version: 2.0
+ */
 class SubscribeActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
@@ -101,6 +114,7 @@ class SubscribeActivity : AppCompatActivity() {
             showToast("Error")
         }
     }
+
 
     override fun onStart() {
         super.onStart()

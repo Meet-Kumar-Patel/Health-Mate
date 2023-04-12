@@ -15,6 +15,18 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
+/**
+ *
+ * This class is used to list all the basic patient
+ * information in the RecycleView, including name,
+ * ID and a button to access the PatientDetail Page.
+ * The button intent determines whether the currently
+ * logged in user is registered to the currently clicked user.
+ *
+ * Author: Rui Zeng, Wenbo Peng
+ * BannerID: B00800727, B00916504
+ * version: 3.0
+ */
 class PatientListActivity : AppCompatActivity(), PatientAdapter.OnViewDetailClickListener {
     private lateinit var recyclerView: RecyclerView
     private lateinit var patients: ArrayList<Patient>

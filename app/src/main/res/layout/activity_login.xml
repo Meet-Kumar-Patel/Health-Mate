@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!--
+A layout containing two EditViews that
+receive the user account password and a
+login button base on Firebase authentication.
+
+Author: Kent Chew
+BannerID: B00812054
+Version: 1.0
+-->
+
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"

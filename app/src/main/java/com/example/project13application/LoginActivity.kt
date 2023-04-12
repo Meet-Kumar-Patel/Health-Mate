@@ -16,6 +16,16 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
+/**
+ *
+ * This is the login page based on Firebase authentication
+ * and can determine the login role (Family member or Caregiver)
+ * and can determine if the login role has any subscriptions.
+ *
+ * Author: Wenbo Peng
+ * BannerID: B00916504
+ * version: 2.0
+ */
 class LoginActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
 

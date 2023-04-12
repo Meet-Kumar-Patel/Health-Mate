@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!--
+Includes a patient details layout with a
+bottom navigation bar that allows the user
+to return to the patient list page instead
+of adding a back button on each page.
+
+Author: Kent Chew
+BannerID: B00812054
+Version: 2.0
+-->
+
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"

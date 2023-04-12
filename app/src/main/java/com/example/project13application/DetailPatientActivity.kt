@@ -19,6 +19,19 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
+/**
+ *
+ * This Class is used to display patient details,
+ * including their full name, the Diary Caregiver
+ * wrote for them and the registrant information
+ * for this patient. Three RecycleViews are used
+ * on the front end.
+ *
+ * Author: Rui Zeng, Meet Kumer Patel
+ * BannerID: B00800727, B00857644
+ * version: 3.0
+ */
+
 class DetailPatientActivity : AppCompatActivity() {
     private lateinit var note_recyclerView: RecyclerView
     private lateinit var sub_fam_recyclerView: RecyclerView

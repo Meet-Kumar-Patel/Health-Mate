@@ -13,6 +13,17 @@ import com.example.project13application.utilities.FormValidator
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
+/**
+ *
+ * This class is used to create a Firebase
+ * authentication-based registration function,
+ * all registered users will be stored in Firebase
+ * authentication users and as a Subscriber into Firebase.
+ *
+ * Author: Kevin Parke
+ * BannerID: B00905552
+ * version: 2.0
+ */
 class SignUpActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivitySignUpBinding
