@@ -2,6 +2,15 @@ package com.example.project13application.ui.models
 
 import com.example.project13application.ui.models.Subscriber
 
+/**
+ *
+ * An model class of Patient with id, firstName, lastName and subscriptionCode fields.
+ *
+ * Author: Wenbo Peng
+ * BannerID: B00916504
+ * version: 2.0
+ */
+
 data class Patient(
 
     // automatic generate by Firebase

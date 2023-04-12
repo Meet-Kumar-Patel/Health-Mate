@@ -4,8 +4,14 @@ import com.google.firebase.database.Exclude
 import kotlinx.datetime.LocalDate
 
 
-//import java.time.LocalDate
-
+/**
+ *
+ * An model class of Diary with id, dataString and content fields.
+ *
+ * Author: Wenbo Peng
+ * BannerID: B00916504
+ * version: 1.0
+ */
 data class Diary(
 
     val id: String = "",
