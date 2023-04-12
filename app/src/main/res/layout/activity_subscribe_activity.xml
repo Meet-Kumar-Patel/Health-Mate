@@ -39,7 +39,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="Subscription code (7 digits)"
+            android:hint="Subscription code (8 digits)"
             android:importantForAutofill="no"
             android:inputType="textCapCharacters"
             android:minHeight="48dp" />
